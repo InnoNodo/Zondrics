@@ -1,8 +1,8 @@
 package main
 
 import (
-	"awesomeProject/internal/authorization"
-	"awesomeProject/internal/registration"
+	"Zondrics/internal/authorization"
+	"Zondrics/internal/registration"
 	"github.com/gofiber/fiber/v2"
 )
 
