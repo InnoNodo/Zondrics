@@ -9,7 +9,7 @@ func SetupRegistrationRoutes(app *fiber.App) {
 	app.Get("/register", Register)
 
 	app.Post("/create_user", func(c *fiber.Ctx) error {
-		data := new(User)
+		data := new(database.User)
 
 		if err := c.BodyParser(data); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -17,9 +17,22 @@ func SetupRegistrationRoutes(app *fiber.App) {
 			})
 		}
 
-		if data.Username == "" || data.Password == "" {
+		if data.Name == "" || data.Hash == "" || data.Phone == "" {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-				"error": "Username and password cannot be empty",
+				"error": "Name and hash cannot be empty",
+			})
+		}
+
+		if database.ValidatePhone(data.Phone) == false {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error": "Invalid phone number",
+			})
+		}
+
+		var existingUser database.User
+		if err := database.DB.Where("Phone = ?", data.Phone).First(&existingUser).Error; err == nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error": "Phone number already exists",
 			})
 		}
 

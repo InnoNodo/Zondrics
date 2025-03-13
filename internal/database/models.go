@@ -4,7 +4,7 @@ type User struct {
 	ID    uint   `gorm:"primaryKey;autoIncrement"`
 	Hash  string `gorm:"unique;not null"`
 	Name  string `gorm:"not null"`
-	Phone string `gorm:"not null"`
+	Phone string `gorm:"not null;unique"`
 }
 
 type Admin struct {

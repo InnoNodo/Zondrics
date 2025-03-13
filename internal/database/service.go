@@ -14,6 +14,10 @@ func ValidatePhone(phone string) bool {
 	return re.MatchString(phone)
 }
 
+//func Hash(username, password string) string {
+//	return jwt.encode(username, password)
+//}
+
 func InitDatabase() error {
 	var err error
 

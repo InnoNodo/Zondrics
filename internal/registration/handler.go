@@ -1,6 +1,7 @@
 package registration
 
 import (
+	"Zondrics/internal/database"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -8,31 +9,29 @@ func Register(c *fiber.Ctx) error {
 	return c.SendString("You registered!")
 }
 
-func NewUser(username, password string) *User {
-	return &User{
-		Username: username,
-		Password: password,
-		Role:     "user",
+func NewUser(name, password, phone string) *database.User {
+	return &database.User{
+		Name:  name,
+		Hash:  password,
+		Phone: phone,
 	}
 }
 
-func NewAdmin(username, password string, permissions []string) *Admin {
-	return &Admin{
-		User: User{
-			Username: username,
-			Password: password,
-			Role:     "admin",
+func NewAdmin(name, password, phone string) *database.Admin {
+	return &database.Admin{
+		User: database.User{
+			Name:  name,
+			Hash:  password,
+			Phone: phone,
 		},
-		Permissions: permissions,
 	}
 }
 
-func NewOrganizationUser(username, password string, orgID int) *OrganizationUser {
-	return &OrganizationUser{
-		User: User{
-			Username: username,
-			Password: password,
-			Role:     "organization_user",
+func NewOrganizationUser(name, password, phone string, orgID uint) *database.OrganizationUser {
+	return &database.OrganizationUser{
+		User: database.User{
+			Name: name,
+			Hash: password,
 		},
 		OrganizationID: orgID,
 	}
