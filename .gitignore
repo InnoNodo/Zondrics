@@ -31,3 +31,5 @@ go.work
 
 # Windows thumbnails
 Thumbs.db
+
+database.db
