@@ -4,14 +4,20 @@ import (
 	"fmt"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"regexp"
 )
 
 var DB *gorm.DB
 
+func ValidatePhone(phone string) bool {
+	re := regexp.MustCompile(`^\+\d{1,3}\d{10}$`)
+	return re.MatchString(phone)
+}
+
 func InitDatabase() error {
 	var err error
 
-	DB, err = gorm.Open(sqlite.Open("users.db"), &gorm.Config{})
+	DB, err = gorm.Open(sqlite.Open("database.db"), &gorm.Config{})
 	if err != nil {
 		return fmt.Errorf("failed to connect to database: %w", err)
 	}
@@ -22,11 +28,4 @@ func InitDatabase() error {
 	}
 
 	return nil
-}
-
-type User struct {
-	ID       uint   `gorm:"primaryKey"`
-	Username string `gorm:"unique;not null"`
-	Password string `gorm:"not null"`
-	Role     string `gorm:"not null"`
 }
