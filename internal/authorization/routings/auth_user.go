@@ -43,20 +43,22 @@ func LoginHandler(c *fiber.Ctx) error {
 
 	hash := database.Hash(data.Login, data.Password)
 
-	//if err != nil {
-	//	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-	//		"error": "Failed to hash password",
-	//	})
-	//}
-
 	if user.Hash != hash {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": "Incorrect password",
 		})
 	}
 
+	token, err := database.CreateJWTToken(user)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to create token",
+		})
+	}
+
+	c.Set("Authorization", "Bearer "+token)
+
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": "Login successful",
-		"hash":    hash,
 	})
 }

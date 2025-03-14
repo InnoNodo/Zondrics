@@ -4,13 +4,17 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"os"
 	"regexp"
+	"time"
 )
 
 var DB *gorm.DB
+var secret = os.Getenv("SECRET")
+var jwtSecret = os.Getenv("JWT_SECRET")
 
 func ValidatePhone(phone string) bool {
 	re := regexp.MustCompile(`^\+\d{1,3}\d{10}$`)
@@ -18,13 +22,25 @@ func ValidatePhone(phone string) bool {
 }
 
 func Hash(login, password string) string {
-	secret := os.Getenv("SECRET")
 
 	data := login + ":" + password + ":" + secret
 
 	hash := sha256.Sum256([]byte(data))
 
 	return hex.EncodeToString(hash[:])
+}
+
+func CreateJWTToken(user User) (string, error) {
+	claims := jwt.MapClaims{
+		"id":       user.ID,
+		"login":    user.Login,
+		"exp":      time.Now().Add(time.Hour * 24).Unix(),
+		"issuedAt": time.Now().Unix(),
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	return token.SignedString([]byte(jwtSecret))
 }
 
 func InitDatabase() error {

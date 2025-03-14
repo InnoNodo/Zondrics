@@ -6,5 +6,7 @@ import (
 )
 
 func SetupRegistrationRoutes(app *fiber.App) {
+
+	//authorized := app.Group("/api", middleware.JWTMiddleware)
 	app.Post("/create_user", routings.CreateUserHandler)
 }

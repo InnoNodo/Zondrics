@@ -56,12 +56,6 @@ func CreateUserHandler(c *fiber.Ctx) error {
 
 	hash := database.Hash(data.Login, data.Password)
 
-	//if err != nil {
-	//	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-	//		"error": "Failed to hash password",
-	//	})
-	//}
-
 	newUser := database.User{Name: data.Name, Hash: hash, Phone: data.Phone, Surname: data.Surname, Login: data.Login}
 
 	if err := database.DB.Create(&newUser).Error; err != nil {
@@ -70,8 +64,16 @@ func CreateUserHandler(c *fiber.Ctx) error {
 		})
 	}
 
+	token, err := database.CreateJWTToken(newUser)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to create token",
+		})
+	}
+
+	c.Set("Authorization", "Bearer "+token)
+
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"message": "User created successfully",
-		"hash":    hash,
 	})
 }
