@@ -33,3 +33,5 @@ go.work
 Thumbs.db
 
 database.db
+
+.env

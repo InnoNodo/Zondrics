@@ -1,9 +1,12 @@
 package database
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"os"
 	"regexp"
 )
 
@@ -14,9 +17,15 @@ func ValidatePhone(phone string) bool {
 	return re.MatchString(phone)
 }
 
-//func Hash(username, password string) string {
-//	return jwt.encode(username, password)
-//}
+func Hash(login, password string) string {
+	secret := os.Getenv("SECRET")
+
+	data := login + ":" + password + ":" + secret
+
+	hash := sha256.Sum256([]byte(data))
+
+	return hex.EncodeToString(hash[:])
+}
 
 func InitDatabase() error {
 	var err error

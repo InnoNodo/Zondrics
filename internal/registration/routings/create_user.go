@@ -2,11 +2,13 @@ package routings
 
 import (
 	"Zondrics/internal/database"
+	"errors"
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 )
 
 func CreateUserHandler(c *fiber.Ctx) error {
-	data := new(database.User)
+	data := new(database.RegistrationInput)
 
 	if err := c.BodyParser(data); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -14,9 +16,21 @@ func CreateUserHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	if data.Name == "" || data.Hash == "" || data.Phone == "" {
+	if data.Name == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Name and hash cannot be empty",
+			"error": "Field 'Name' cannot be empty",
+		})
+	}
+
+	if data.Surname == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Field 'Surname' cannot be empty",
+		})
+	}
+
+	if data.Password == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Field 'Password' cannot be empty",
 		})
 	}
 
@@ -27,13 +41,28 @@ func CreateUserHandler(c *fiber.Ctx) error {
 	}
 
 	var existingUser database.User
-	if err := database.DB.Where("Phone = ?", data.Phone).First(&existingUser).Error; err == nil {
+	if err := database.DB.Where("Login = ?", data.Login).First(&existingUser).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+		} else {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": "Failed to query database",
+			})
+		}
+	} else {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Phone number already exists",
+			"error": "Login is already taken",
 		})
 	}
 
-	newUser := database.User{Name: data.Name, Hash: data.Hash, Phone: data.Phone}
+	hash := database.Hash(data.Login, data.Password)
+
+	//if err != nil {
+	//	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+	//		"error": "Failed to hash password",
+	//	})
+	//}
+
+	newUser := database.User{Name: data.Name, Hash: hash, Phone: data.Phone, Surname: data.Surname, Login: data.Login}
 
 	if err := database.DB.Create(&newUser).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -43,6 +72,6 @@ func CreateUserHandler(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"message": "User created successfully",
-		"user":    data,
+		"hash":    hash,
 	})
 }

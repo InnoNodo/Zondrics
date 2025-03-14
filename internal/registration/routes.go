@@ -7,5 +7,4 @@ import (
 
 func SetupRegistrationRoutes(app *fiber.App) {
 	app.Post("/create_user", routings.CreateUserHandler)
-	
 }

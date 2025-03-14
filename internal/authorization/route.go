@@ -1,7 +1,10 @@
 package authorization
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"Zondrics/internal/authorization/routings"
+	"github.com/gofiber/fiber/v2"
+)
 
 func SetupAuthRoutes(app *fiber.App) {
-	app.Get("/auth", Authorization)
+	app.Post("/auth", routings.LoginHandler)
 }
