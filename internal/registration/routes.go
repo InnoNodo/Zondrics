@@ -12,4 +12,6 @@ func SetupRegistrationRoutes(app *fiber.App) {
 	app.Post("/create_user", handlers.CreateUserHandler)
 
 	app.Post("/create_organization", handlers.CreateOrganizationHandler)
+
+	app.Post("/create_organization_user", handlers.CreateOrganizationUserHandler)
 }

@@ -8,12 +8,20 @@ type UserRegistrationInput struct {
 	Password string `json:"password"`
 }
 
+type OrganizationUserRegistrationInput struct {
+	Login          string `json:"login"`
+	OrganizationID uint   `json:"organization_id"`
+	Name           string `json:"name"`
+	Surname        string `json:"surname"`
+	Password       string `json:"password"`
+	Phone          string `json:"phone"`
+	Type           string `json:"type"`
+}
+
 type OrganizationRegistrationInput struct {
-	Login    string `json:"login"`
 	Name     string `json:"name"`
 	City     string `json:"city"`
 	Activity string `json:"activity"`
-	Password string `json:"password"`
 }
 
 type AuthInput struct {

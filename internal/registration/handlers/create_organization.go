@@ -29,21 +29,15 @@ func CreateOrganizationHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	if data.Activity != "" {
+	if data.Activity == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Field 'Activity' cannot be empty",
 		})
 	}
 
-	if data.City != "" {
+	if data.City == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Field 'City' cannot be empty",
-		})
-	}
-
-	if data.Password == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Field 'Password' cannot be empty",
 		})
 	}
 
@@ -68,7 +62,7 @@ func CreateOrganizationHandler(c *fiber.Ctx) error {
 			"error": "Failed to create organization",
 		})
 	}
-
+	
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"message": "Organization created successfully",
 	})

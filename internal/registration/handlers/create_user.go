@@ -65,7 +65,7 @@ func CreateUserHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	token, err := database.CreateJWTToken(newUser)
+	token, err := database.CreateTokenForUser(newUser)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to create token",

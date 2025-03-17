@@ -31,17 +31,25 @@ func Hash(login, password string) string {
 	return hex.EncodeToString(hash[:])
 }
 
-func CreateJWTToken(user models.User) (string, error) {
+func CreateTokenForUser(user models.User) (string, error) {
 	claims := jwt.MapClaims{
-		"id":       user.ID,
-		"login":    user.Login,
-		"exp":      time.Now().Add(time.Hour * 24).Unix(),
-		"issuedAt": time.Now().Unix(),
+		"sub":  user.ID,
+		"role": "user",
+		"exp":  time.Now().Add(time.Hour * 72).Unix(),
 	}
-
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString([]byte("your-secret-key"))
+}
 
-	return token.SignedString([]byte(jwtSecret))
+func CreateTokenForOrganizationUser(user models.User, organizationID uint) (string, error) {
+	claims := jwt.MapClaims{
+		"sub":             user.ID,
+		"role":            "organization_user",
+		"organization_id": organizationID,
+		"exp":             time.Now().Add(time.Hour * 72).Unix(),
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString([]byte("your-secret-key"))
 }
 
 func InitDatabase() error {
@@ -52,7 +60,17 @@ func InitDatabase() error {
 		return fmt.Errorf("failed to connect to database: %w", err)
 	}
 
-	err = DB.AutoMigrate(&models.User{})
+	err = DB.AutoMigrate(
+		&models.User{},
+		&models.Admin{},
+		&models.Organization{},
+		&models.OrganizationUser{},
+		&models.TrainingBooking{},
+		&models.HaircutBooking{},
+		&models.RestaurantBooking{},
+		&models.Resource{},
+		&models.Payment{},
+	)
 	if err != nil {
 		return fmt.Errorf("failed to migrate database: %w", err)
 	}

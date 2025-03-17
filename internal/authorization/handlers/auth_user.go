@@ -50,16 +50,38 @@ func LoginHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	token, err := database.CreateJWTToken(user)
+	var organizationUser models.OrganizationUser
+	err := database.DB.Where("user_id = ?", user.ID).First(&organizationUser).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			token, err := database.CreateTokenForUser(user)
+			if err != nil {
+				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+					"error": "Failed to generate token",
+				})
+			}
+			c.Set("Authorization", "Bearer "+token)
+
+			return c.Status(fiber.StatusOK).JSON(fiber.Map{
+				"message": "User logged in successfully",
+			})
+		}
+
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to query organization user",
+		})
+	}
+
+	token, err := database.CreateTokenForOrganizationUser(user, organizationUser.OrganizationID)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to create token",
+			"error": "Failed to generate token",
 		})
 	}
 
 	c.Set("Authorization", "Bearer "+token)
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message": "Login successful",
+		"message": "Organization user logged in successfully",
 	})
 }
