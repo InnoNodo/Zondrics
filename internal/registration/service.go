@@ -1,20 +1,20 @@
 package registration
 
 import (
-	"Zondrics/internal/database"
+	"Zondrics/internal/database/models"
 )
 
-func NewUser(name, password, phone string) *database.User {
-	return &database.User{
+func NewUser(name, password, phone string) *models.User {
+	return &models.User{
 		Name:  name,
 		Hash:  password,
 		Phone: phone,
 	}
 }
 
-func NewAdmin(name, password, phone string) *database.Admin {
-	return &database.Admin{
-		User: database.User{
+func NewAdmin(name, password, phone string) *models.Admin {
+	return &models.Admin{
+		User: models.User{
 			Name:  name,
 			Hash:  password,
 			Phone: phone,
@@ -22,9 +22,9 @@ func NewAdmin(name, password, phone string) *database.Admin {
 	}
 }
 
-func NewOrganizationUser(name, password, phone string, orgID uint) *database.OrganizationUser {
-	return &database.OrganizationUser{
-		User: database.User{
+func NewOrganizationUser(name, password, phone string, orgID uint) *models.OrganizationUser {
+	return &models.OrganizationUser{
+		User: models.User{
 			Name: name,
 			Hash: password,
 		},

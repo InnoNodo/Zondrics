@@ -1,6 +1,7 @@
 package database
 
 import (
+	"Zondrics/internal/database/models"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
@@ -30,7 +31,7 @@ func Hash(login, password string) string {
 	return hex.EncodeToString(hash[:])
 }
 
-func CreateJWTToken(user User) (string, error) {
+func CreateJWTToken(user models.User) (string, error) {
 	claims := jwt.MapClaims{
 		"id":       user.ID,
 		"login":    user.Login,
@@ -51,7 +52,7 @@ func InitDatabase() error {
 		return fmt.Errorf("failed to connect to database: %w", err)
 	}
 
-	err = DB.AutoMigrate(&User{})
+	err = DB.AutoMigrate(&models.User{})
 	if err != nil {
 		return fmt.Errorf("failed to migrate database: %w", err)
 	}

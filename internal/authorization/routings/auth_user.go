@@ -2,13 +2,14 @@ package routings
 
 import (
 	"Zondrics/internal/database"
+	"Zondrics/internal/database/models"
 	"errors"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
 
 func LoginHandler(c *fiber.Ctx) error {
-	data := new(database.AuthInput)
+	data := new(models.AuthInput)
 
 	if err := c.BodyParser(data); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -28,7 +29,7 @@ func LoginHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	var user database.User
+	var user models.User
 	if err := database.DB.Where("Login = ?", data.Login).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
