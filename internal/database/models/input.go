@@ -1,10 +1,18 @@
 package models
 
-type RegistrationInput struct {
+type UserRegistrationInput struct {
 	Login    string `json:"login"`
 	Name     string `json:"name"`
 	Surname  string `json:"surname"`
 	Phone    string `json:"phone"`
+	Password string `json:"password"`
+}
+
+type OrganizationRegistrationInput struct {
+	Login    string `json:"login"`
+	Name     string `json:"name"`
+	City     string `json:"city"`
+	Activity string `json:"activity"`
 	Password string `json:"password"`
 }
 

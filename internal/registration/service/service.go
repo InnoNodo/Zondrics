@@ -1,4 +1,4 @@
-package registration
+package service
 
 import (
 	"Zondrics/internal/database/models"

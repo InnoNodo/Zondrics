@@ -8,8 +8,8 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateUserHandler(c *fiber.Ctx) error {
-	data := new(models.UserRegistrationInput)
+func CreateOrganizationHandler(c *fiber.Ctx) error {
+	data := new(models.OrganizationRegistrationInput)
 
 	if err := c.BodyParser(data); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -23,9 +23,21 @@ func CreateUserHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	if data.Surname == "" {
+	if data.Activity != "sport" && data.Activity != "restaurant" && data.Activity != "haircut" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Field 'Surname' cannot be empty",
+			"error": "Field 'Activity' have wrong type of activity",
+		})
+	}
+
+	if data.Activity != "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Field 'Activity' cannot be empty",
+		})
+	}
+
+	if data.City != "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Field 'City' cannot be empty",
 		})
 	}
 
@@ -35,14 +47,8 @@ func CreateUserHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	if !database.ValidatePhone(data.Phone) {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid phone number",
-		})
-	}
-
-	var existingUser models.User
-	if err := database.DB.Where("Login = ?", data.Login).First(&existingUser).Error; err != nil {
+	var existingOrganization models.Organization
+	if err := database.DB.Where("Name = ?", data.Name).First(&existingOrganization).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 		} else {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -51,30 +57,19 @@ func CreateUserHandler(c *fiber.Ctx) error {
 		}
 	} else {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Login is already taken",
+			"error": "Name is already taken",
 		})
 	}
 
-	hash := database.Hash(data.Login, data.Password)
+	newOrganization := models.Organization{Name: data.Name, City: data.City, Activity: data.Activity}
 
-	newUser := models.User{Name: data.Name, Hash: hash, Phone: data.Phone, Surname: data.Surname, Login: data.Login}
-
-	if err := database.DB.Create(&newUser).Error; err != nil {
+	if err := database.DB.Create(&newOrganization).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to create user",
+			"error": "Failed to create organization",
 		})
 	}
-
-	token, err := database.CreateJWTToken(newUser)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to create token",
-		})
-	}
-
-	c.Set("Authorization", "Bearer "+token)
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-		"message": "User created successfully",
+		"message": "Organization created successfully",
 	})
 }
