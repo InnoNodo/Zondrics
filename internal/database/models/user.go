@@ -16,13 +16,15 @@ type Admin struct {
 }
 
 type Organization struct {
-	ID   uint   `gorm:"primaryKey;autoIncrement"`
-	Name string `gorm:"not null"`
-	City string `gorm:"not null"`
+	ID       uint   `gorm:"primaryKey;autoIncrement"`
+	Name     string `gorm:"not null"`
+	City     string `gorm:"not null"`
+	Activity string `gorm:"not null"`
 }
 
 type OrganizationUser struct {
 	ID             uint         `gorm:"primaryKey;autoIncrement"`
+	Type           string       `gorm:"not null"`
 	UserID         uint         `gorm:"not null"`
 	User           User         `gorm:"foreignKey:UserID"`
 	OrganizationID uint         `gorm:"not null"`

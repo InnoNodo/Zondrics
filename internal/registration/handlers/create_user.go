@@ -1,4 +1,4 @@
-package routings
+package handlers
 
 import (
 	"Zondrics/internal/database"

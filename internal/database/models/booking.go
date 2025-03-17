@@ -13,41 +13,43 @@ type Resource struct {
 	UpdatedAt      string       `gorm:"autoUpdateTime"`
 }
 
-type Booking struct {
+type HaircutBooking struct {
+	ID                 uint             `gorm:"primaryKey;autoIncrement"`
+	UserID             uint             `gorm:"not null"`
+	OrganizationID     uint             `gorm:"not null"`
+	Organization       Organization     `gorm:"foreignKey:OrganizationID"`
+	OrganizationUserID uint             `gorm:"not null"`
+	OrganizationUser   OrganizationUser `gorm:"foreignKey:OrganizationUserID"`
+	EventDate          string           `json:"event_date" validate:"required"`
+	EventTime          string           `json:"event_time" validate:"required"`
+	Price              float64          `gorm:"not null"`
+}
+
+type RestaurantBooking struct {
 	ID             uint         `gorm:"primaryKey;autoIncrement"`
 	UserID         uint         `gorm:"not null"`
-	User           User         `gorm:"foreignKey:UserID"`
 	OrganizationID uint         `gorm:"not null"`
 	Organization   Organization `gorm:"foreignKey:OrganizationID"`
-	ResourceID     uint         `gorm:"not null"`
-	Resource       Resource     `gorm:"foreignKey:ResourceID"`
-	EventDate      string       `gorm:"not null"`
-	EventTime      string       `gorm:"not null"`
-	Duration       uint         `gorm:"not null"`
-	Payment        PaymentInfo  `gorm:"embedded"`
-	Status         string       `gorm:"type:varchar(20);default:'active'"`
-	CreatedAt      string       `gorm:"autoCreateTime"`
+	TableNumber    int          `gorm:"not null"`
+	EventDate      string       `json:"event_date" validate:"required"`
+	EventTime      string       `json:"event_time" validate:"required"`
+	Guests         int          `gorm:"not null"`
 }
 
-type Training struct {
-	ID              uint         `gorm:"primaryKey;autoIncrement"`
-	OrganizationID  uint         `gorm:"not null"`
-	Organization    Organization `gorm:"foreignKey:OrganizationID"`
-	ResourceID      uint         `gorm:"not null"`
-	Resource        Resource     `gorm:"foreignKey:ResourceID"`
-	TrainerID       uint         `gorm:"not null"`
-	Trainer         User         `gorm:"foreignKey:TrainerID"`
-	Title           string       `gorm:"not null"`
-	Description     string       `gorm:"type:text"`
-	StartTime       string       `gorm:"not null"`
-	Duration        uint         `gorm:"not null"`
-	Payment         PaymentInfo  `gorm:"embedded"`
-	MaxParticipants uint         `gorm:"not null"`
-	CreatedAt       string       `gorm:"autoCreateTime"`
-	UpdatedAt       string       `gorm:"autoUpdateTime"`
+type TrainingBooking struct {
+	ID                 uint             `gorm:"primaryKey;autoIncrement"`
+	UserID             uint             `gorm:"not null"`
+	OrganizationID     uint             `gorm:"not null"`
+	Organization       Organization     `gorm:"foreignKey:OrganizationID"`
+	OrganizationUserID uint             `gorm:"not null"`
+	OrganizationUser   OrganizationUser `gorm:"foreignKey:OrganizationUserID"`
+	Duration           int              `gorm:"not null"`
+	EventDate          string           `json:"event_date"`
+	EventTime          string           `json:"event_time"`
+	Age                int              `gorm:""`
 }
 
-type PaymentInfo struct {
+type Payment struct {
 	Amount      float64 `gorm:"not null"`
 	Currency    string  `gorm:"type:varchar(10);not null"`
 	Status      string  `gorm:"type:varchar(20);default:'pending'"`
