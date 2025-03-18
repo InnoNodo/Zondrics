@@ -1,24 +1,5 @@
 package models
 
-import "time"
-
-type EventBooking struct {
-	ID                 uint             `gorm:"primaryKey;autoIncrement"`
-	UserID             uint             `gorm:"not null"`
-	User               User             `gorm:"foreignKey:UserID"`
-	OrganizationID     uint             `gorm:"not null"`
-	Organization       Organization     `gorm:"foreignKey:OrganizationID"`
-	ResourceID         uint             `gorm:"not null"`
-	Resource           Resource         `gorm:"foreignKey:ResourceID"`
-	OrganizationUserID uint             `gorm:"not null"`
-	OrganizationUser   OrganizationUser `gorm:"foreignKey:OrganizationUserID"`
-	//PaymentID          uint             `gorm:"not null"`
-	//Payment            Payment         `gorm:"foreignKey:PaymentID"`
-	Duration  int       `gorm:"not null"`
-	EventTime time.Time `json:"event_time" validate:"required"`
-	Age       int       `gorm:""`
-}
-
 type HaircutBooking struct {
 	ID                 uint             `gorm:"primaryKey;autoIncrement"`
 	UserID             uint             `gorm:"not null"`
@@ -29,7 +10,8 @@ type HaircutBooking struct {
 	Organization       Organization     `gorm:"foreignKey:OrganizationID"`
 	OrganizationUserID uint             `gorm:"not null"`
 	OrganizationUser   OrganizationUser `gorm:"foreignKey:OrganizationUserID"`
-	EventTime          time.Time        `json:"event_time" validate:"required"`
+	TimeSlotID         uint             `gorm:"not null"`
+	Timeslot           Timeslot         `gorm:"foreignKey:TimeslotID"`
 	Price              float64          `gorm:"not null"`
 	//PaymentID          uint             `gorm:"not null"`
 	//Payment            Payment         `gorm:"foreignKey:PaymentID"`
@@ -44,7 +26,8 @@ type RestaurantBooking struct {
 	ResourceID     uint         `gorm:"not null"`
 	Resource       Resource     `gorm:"foreignKey:ResourceID"`
 	TableNumber    int          `gorm:"not null"`
-	EventTime      time.Time    `json:"event_time" validate:"required"`
+	TimeSlotID     uint         `gorm:"not null"`
+	Timeslot       Timeslot     `gorm:"foreignKey:TimeslotID"`
 	Guests         int          `gorm:"not null"`
 	//PaymentID          uint             `gorm:"not null"`
 	//Payment            Payment         `gorm:"foreignKey:PaymentID"`
@@ -60,8 +43,19 @@ type TrainingBooking struct {
 	OrganizationUser   OrganizationUser `gorm:"foreignKey:OrganizationUserID"`
 	ResourceID         uint             `gorm:"not null"`
 	Resource           Resource         `gorm:"foreignKey:ResourceID"`
-	EventTime          time.Time        `json:"event_time"`
+	TimeSlotID         uint             `gorm:"not null"`
+	Timeslot           Timeslot         `gorm:"foreignKey:TimeslotID"`
 	Age                int              `gorm:""`
+	//PaymentID          uint             `gorm:"not null"`
+	//Payment            Payment         `gorm:"foreignKey:PaymentID"`
+}
+
+type EventBooking struct {
+	ID      uint  `gorm:"primaryKey;autoIncrement"`
+	UserID  uint  `gorm:"not null"`
+	User    User  `gorm:"foreignKey:UserID"`
+	EventID uint  `gorm:"not null"`
+	Event   Event `gorm:"foreignKey:EventID"`
 	//PaymentID          uint             `gorm:"not null"`
 	//Payment            Payment         `gorm:"foreignKey:PaymentID"`
 }
@@ -73,7 +67,8 @@ type Event struct {
 	OrganizationUser   OrganizationUser `gorm:"foreignKey:OrganizationUserID"`
 	ResourceID         uint             `gorm:"not null"`
 	Resource           Resource         `gorm:"foreignKey:ResourceID"`
-	EventTime          time.Time        `gorm:"not null"`
+	TimeSlotID         uint             `gorm:"not null"`
+	Timeslot           Timeslot         `gorm:"foreignKey:TimeslotID"`
 	Capacity           int              `gorm:"not null"`
 }
 

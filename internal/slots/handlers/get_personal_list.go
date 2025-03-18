@@ -1,14 +1,14 @@
 package handlers
 
 import (
-	"Zondrics/internal/calendar/service"
 	"Zondrics/internal/database"
 	"Zondrics/internal/database/models"
+	"Zondrics/internal/slots/service"
 	"github.com/gofiber/fiber/v2"
 	"time"
 )
 
-func GetCalendarHandler(c *fiber.Ctx) error {
+func GetAvailablePersonalBookingsHandler(c *fiber.Ctx) error {
 	data := new(models.CalendarInput)
 
 	if err := c.BodyParser(data); err != nil {
@@ -75,7 +75,7 @@ func GetCalendarHandler(c *fiber.Ctx) error {
 	slots, err := service.GetAvailableSlots(
 		database.DB,
 		data.OrganizationID,
-		data.OrganizationUserID,
+		&data.OrganizationUserID,
 		time.Hour,
 		formatedOpeningTime,
 		formatedClosingTime,

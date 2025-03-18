@@ -35,13 +35,14 @@ type BookingInput struct {
 	UserID             uint    `json:"user_id"`
 	OrganizationID     uint    `json:"organization_id" validate:"required"`
 	ResourceID         uint    `json:"resource_id" validate:"required"`
-	EventTime          string  `json:"event_time" validate:"required"`
+	StartTime          string  `json:"event_time" validate:"required"`
 	Duration           int     `json:"duration"`
 	Age                int     `json:"age"`
 	Price              float64 `json:"price"`
 	OrganizationUserID uint    `json:"organization_user_id" validate:"required"`
 	TableNumber        int     `json:"table_number"`
 	Guests             int     `json:"guests"`
+	EventID            uint    `json:"event_id" validate:"required"`
 	//PaymentID          uint    `json:"payment_id" validate:"required"`
 }
 
@@ -72,4 +73,9 @@ type CalendarInput struct {
 	OrganizationID     uint   `json:"organization_id"`
 	OrganizationUserID uint   `json:"organization_user_id"`
 	Day                string `json:"day"`
+}
+
+type EventListInput struct {
+	OrganizationID uint `json:"organization_id"`
+	UserID         uint `json:"user_id"`
 }

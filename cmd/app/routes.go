@@ -6,6 +6,7 @@ import (
 	"Zondrics/internal/events"
 	"Zondrics/internal/registration"
 	"Zondrics/internal/resource"
+	"Zondrics/internal/slots"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -15,4 +16,5 @@ func CombineRoutes(app *fiber.App) {
 	resource.SetupResourceRoutes(app)
 	bookings.SetupBookingRoutes(app)
 	events.SetupEventRoutes(app)
+	slots.SetupSlotsRoutes(app)
 }

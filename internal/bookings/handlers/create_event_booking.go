@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"Zondrics/internal/bookings/service"
 	"Zondrics/internal/database"
 	"Zondrics/internal/database/models"
 	"github.com/gofiber/fiber/v2"
@@ -27,83 +26,42 @@ func CreateEventBookingHandler(c *fiber.Ctx) error {
 
 	if data.UserID == 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Wrong user_id",
+			"error": "Field 'user_id' cannot be empty'",
 		})
 	}
 
-	if data.ResourceID == 0 {
+	if data.EventID == 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Resource ID is required",
+			"error": "Field 'event_id' cannot be empty'",
 		})
 	}
 
-	var organization models.Organization
-	if err := database.DB.First(&organization, data.OrganizationID).Error; err != nil {
+	var event *models.Event
+	if err := database.DB.First(&event, data.EventID).Error; err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"error": "Organization not found",
+			"error": "Event not found",
 		})
 	}
 
-	var resource models.Resource
-	if err := database.DB.First(&resource, data.ResourceID).Error; err != nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"error": "Resource not found",
-		})
-	}
-
-	if data.EventTime == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Event Date cannot be empty",
-		})
-	}
-
-	formatedTime, err := service.TimeFormatter(data.EventTime)
+	var count int64
+	err := database.DB.Model(&models.EventBooking{}).
+		Where("user_id = ? AND event_id = ?", data.UserID, data.EventID).
+		Count(&count).Error
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Wrong time format",
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to query database",
 		})
 	}
 
-	checkedTime, err := service.CheckTime(formatedTime)
-	if err != nil {
+	if count > 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Time should be in the future",
-		})
-	}
-
-	if data.Age <= 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Age must be provided and greater than 0 for sport bookings",
-		})
-	}
-
-	if data.Duration <= 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Duration must be provided and greater than 0",
-		})
-	}
-
-	if data.OrganizationUserID == 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Field 'organization_user_id' cannot be empty",
-		})
-	}
-
-	var organizationUser models.Organization
-	if err := database.DB.First(&organizationUser, data.OrganizationUserID).Error; err != nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"error": "Trainer not found",
+			"error": "Event booking already exists",
 		})
 	}
 
 	record := models.EventBooking{
-		UserID:             data.UserID,
-		OrganizationID:     data.OrganizationID,
-		OrganizationUserID: data.OrganizationUserID,
-		ResourceID:         data.ResourceID,
-		Duration:           data.Duration,
-		EventTime:          checkedTime,
-		Age:                data.Age,
+		UserID:  data.UserID,
+		EventID: data.EventID,
 	}
 
 	if err := database.DB.Create(&record).Error; err != nil {

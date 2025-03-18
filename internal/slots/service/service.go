@@ -29,7 +29,7 @@ func FormatDate(date string) (time.Time, error) {
 	return formatedDay, nil
 }
 
-func GetAvailableSlots(db *gorm.DB, organizationID uint, organizationUserID uint, slotDuration time.Duration, workStart time.Time, workEnd time.Time) ([]models.SlotStatus, error) {
+func GetAvailableSlots(db *gorm.DB, organizationID uint, organizationUserID *uint, slotDuration time.Duration, workStart time.Time, workEnd time.Time) ([]models.SlotStatus, error) {
 	var slots []models.SlotStatus
 
 	now := time.Now()
@@ -46,9 +46,17 @@ func GetAvailableSlots(db *gorm.DB, organizationID uint, organizationUserID uint
 	}
 
 	var bookedSlots []models.Timeslot
-	if err := db.Where("organization_id = ? AND organization_user_id = ? AND ((start_time >= ? AND start_time < ?) OR (end_time > ? AND end_time <= ?))",
-		organizationID, organizationUserID, workStart, workEnd, workStart, workEnd).Find(&bookedSlots).Error; err != nil {
-		return nil, err
+
+	if organizationUserID != nil {
+		if err := db.Where("organization_id = ? AND organization_user_id = ? AND ((start_time >= ? AND start_time < ?) OR (end_time > ? AND end_time <= ?))",
+			organizationID, organizationUserID, workStart, workEnd, workStart, workEnd).Find(&bookedSlots).Error; err != nil {
+			return nil, err
+		}
+	} else {
+		if err := db.Where("organization_id = ? AND ((start_time >= ? AND start_time < ?) OR (end_time > ? AND end_time <= ?))",
+			organizationID, organizationUserID, workStart, workEnd, workStart, workEnd).Find(&bookedSlots).Error; err != nil {
+			return nil, err
+		}
 	}
 
 	for _, possibleSlot := range allPossibleSlots {
@@ -73,4 +81,32 @@ func GetAvailableSlots(db *gorm.DB, organizationID uint, organizationUserID uint
 	}
 
 	return slots, nil
+}
+
+func GetAvailableEvents(db *gorm.DB, organizationID uint, userID uint) ([]models.Event, error) {
+	var events []models.Event
+
+	err := db.Where("organization_id = ?", organizationID).Find(&events).Error
+	if err != nil {
+		return nil, err
+	}
+
+	var availableEvents []models.Event
+
+	for _, event := range events {
+		var bookingsCount int64
+
+		err := db.Model(&models.EventBooking{}).
+			Where("event_id = ? AND user_id != ?", event.OrganizationID).Count(&bookingsCount).Error
+		if err != nil {
+			return nil, err
+		}
+
+		if bookingsCount < int64(event.Capacity) {
+			availableEvents = append(availableEvents, event)
+		}
+
+	}
+
+	return availableEvents, nil
 }

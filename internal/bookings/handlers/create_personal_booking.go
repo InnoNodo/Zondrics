@@ -5,6 +5,7 @@ import (
 	"Zondrics/internal/database"
 	"Zondrics/internal/database/models"
 	"github.com/gofiber/fiber/v2"
+	"time"
 )
 
 func CreatePersonalBookingHandler(c *fiber.Ctx) error {
@@ -51,13 +52,13 @@ func CreatePersonalBookingHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	if data.EventTime == "" {
+	if data.StartTime == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Event Date cannot be empty",
 		})
 	}
 
-	formatedTime, err := service.TimeFormatter(data.EventTime)
+	formatedTime, err := service.TimeFormatter(data.StartTime)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Wrong time format",
@@ -104,12 +105,20 @@ func CreatePersonalBookingHandler(c *fiber.Ctx) error {
 			})
 		}
 
+		timeSlot := models.Timeslot{
+			UserID:             &data.UserID,
+			OrganizationID:     data.OrganizationID,
+			OrganizationUserID: &data.OrganizationUserID,
+			StartTime:          checkedTime,
+			EndTime:            checkedTime.Add(time.Hour),
+		}
+
 		record := models.TrainingBooking{
 			UserID:             data.UserID,
 			OrganizationID:     data.OrganizationID,
 			OrganizationUserID: data.OrganizationUserID,
 			ResourceID:         data.ResourceID,
-			EventTime:          checkedTime,
+			Timeslot:           timeSlot,
 			Age:                data.Age,
 		}
 		if err := database.DB.Create(&record).Error; err != nil {
@@ -147,12 +156,20 @@ func CreatePersonalBookingHandler(c *fiber.Ctx) error {
 			})
 		}
 
+		timeSlot := models.Timeslot{
+			UserID:             &data.UserID,
+			OrganizationID:     data.OrganizationID,
+			OrganizationUserID: &data.OrganizationUserID,
+			StartTime:          checkedTime,
+			EndTime:            checkedTime.Add(time.Hour),
+		}
+
 		record := models.HaircutBooking{
 			UserID:             data.UserID,
 			OrganizationID:     data.OrganizationID,
 			OrganizationUserID: data.OrganizationUserID,
 			ResourceID:         data.ResourceID,
-			EventTime:          checkedTime,
+			Timeslot:           timeSlot,
 			Price:              data.Price,
 		}
 		if err := database.DB.Create(&record).Error; err != nil {
@@ -170,12 +187,21 @@ func CreatePersonalBookingHandler(c *fiber.Ctx) error {
 				"error": "Guests must be provided and greater than 0 for restaurant bookings",
 			})
 		}
+
+		timeSlot := models.Timeslot{
+			UserID:             &data.UserID,
+			OrganizationID:     data.OrganizationID,
+			OrganizationUserID: nil,
+			StartTime:          checkedTime,
+			EndTime:            checkedTime.Add(time.Hour),
+		}
+
 		record := models.RestaurantBooking{
 			UserID:         data.UserID,
 			OrganizationID: data.OrganizationID,
 			TableNumber:    data.TableNumber,
 			ResourceID:     data.ResourceID,
-			EventTime:      checkedTime,
+			Timeslot:       timeSlot,
 			Guests:         data.Guests,
 		}
 		if err := database.DB.Create(&record).Error; err != nil {

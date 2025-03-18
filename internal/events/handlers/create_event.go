@@ -5,6 +5,7 @@ import (
 	"Zondrics/internal/database/models"
 	"Zondrics/internal/events/service"
 	"github.com/gofiber/fiber/v2"
+	"time"
 )
 
 func CreateEventHandler(c *fiber.Ctx) error {
@@ -87,11 +88,19 @@ func CreateEventHandler(c *fiber.Ctx) error {
 		})
 	}
 
+	timeSlot := models.Timeslot{
+		UserID:             nil,
+		OrganizationID:     data.OrganizationID,
+		OrganizationUserID: &data.OrganizationUserID,
+		StartTime:          checkedTime,
+		EndTime:            checkedTime.Add(time.Hour),
+	}
+
 	record := models.Event{
 		OrganizationID:     data.OrganizationID,
 		OrganizationUserID: data.OrganizationUserID,
 		ResourceID:         data.ResourceID,
-		EventTime:          checkedTime,
+		Timeslot:           timeSlot,
 		Capacity:           data.Capacity,
 	}
 
