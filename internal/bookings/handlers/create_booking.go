@@ -15,58 +15,87 @@ func CreateBookingHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	bookingInput := new(models.BookingInput)
-	if err := c.BodyParser(bookingInput); err != nil {
+	data := new(models.BookingInput)
+	if err := c.BodyParser(data); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid request body",
 		})
 	}
 
+	if data.ResourceID == 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Resource ID is required",
+		})
+	}
+
 	var organization models.Organization
-	if err := database.DB.First(&organization, bookingInput.OrganizationID).Error; err != nil {
+	if err := database.DB.First(&organization, data.OrganizationID).Error; err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"error": "Organization not found",
 		})
 	}
 
+	var resource models.Resource
+	if err := database.DB.First(&resource, data.ResourceID).Error; err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "Resource not found",
+		})
+	}
+
+	//TODO:
+	//Check EventDate datetime.now()
+	//Check EventTime datetime.now()
+
+	if data.EventDate == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Event Date cannot be empty",
+		})
+	}
+
+	if data.EventTime == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Event Time cannot be empty",
+		})
+	}
+
 	switch organization.Activity {
 	case "sport":
-		if bookingInput.Age <= 0 {
+		if data.Age <= 0 {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error": "Age must be provided and greater than 0 for sport bookings",
 			})
 		}
 		record := models.TrainingBooking{
 			UserID:             UserID,
-			OrganizationID:     bookingInput.OrganizationID,
-			OrganizationUserID: bookingInput.OrganizationUserID,
-			Duration:           bookingInput.Duration,
-			EventDate:          bookingInput.EventDate,
-			EventTime:          bookingInput.EventTime,
-			Age:                bookingInput.Age,
+			OrganizationID:     data.OrganizationID,
+			OrganizationUserID: data.OrganizationUserID,
+			Duration:           data.Duration,
+			EventDate:          data.EventDate,
+			EventTime:          data.EventTime,
+			Age:                data.Age,
 		}
 		if err := database.DB.Create(&record).Error; err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-				"error": "Failed to create personal training record",
+				"error": "Failed to create personal events record",
 			})
 		}
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-			"message": "Personal training record created successfully",
+			"message": "Personal events record created successfully",
 		})
 
 	case "haircut":
-		if bookingInput.Price <= 0 {
+		if data.Price <= 0 {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error": "Price must be provided and greater than 0 for haircut bookings",
 			})
 		}
 		record := models.HaircutBooking{
 			UserID:             UserID,
-			OrganizationID:     bookingInput.OrganizationID,
-			OrganizationUserID: bookingInput.OrganizationUserID,
-			EventDate:          bookingInput.EventDate,
-			EventTime:          bookingInput.EventTime,
-			Price:              bookingInput.Price,
+			OrganizationID:     data.OrganizationID,
+			OrganizationUserID: data.OrganizationUserID,
+			EventDate:          data.EventDate,
+			EventTime:          data.EventTime,
+			Price:              data.Price,
 		}
 		if err := database.DB.Create(&record).Error; err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -78,18 +107,18 @@ func CreateBookingHandler(c *fiber.Ctx) error {
 		})
 
 	case "restaurant":
-		if bookingInput.Guests <= 0 {
+		if data.Guests <= 0 {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error": "Guests must be provided and greater than 0 for restaurant bookings",
 			})
 		}
 		record := models.RestaurantBooking{
 			UserID:         UserID,
-			OrganizationID: bookingInput.OrganizationID,
-			TableNumber:    bookingInput.TableNumber,
-			EventDate:      bookingInput.EventDate,
-			EventTime:      bookingInput.EventTime,
-			Guests:         bookingInput.Guests,
+			OrganizationID: data.OrganizationID,
+			TableNumber:    data.TableNumber,
+			EventDate:      data.EventDate,
+			EventTime:      data.EventTime,
+			Guests:         data.Guests,
 		}
 		if err := database.DB.Create(&record).Error; err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{

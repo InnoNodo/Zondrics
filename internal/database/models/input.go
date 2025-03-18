@@ -48,6 +48,9 @@ type ResourceStatusInput struct {
 	Status     string `json:"status"`
 }
 
+type EventInput struct {
+}
+
 type ResourceInput struct {
 	OrganizationID uint   `json:"organization_id"`
 	Name           string `json:"name"`

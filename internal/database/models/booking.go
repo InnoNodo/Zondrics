@@ -4,6 +4,8 @@ type HaircutBooking struct {
 	ID                 uint             `gorm:"primaryKey;autoIncrement"`
 	UserID             uint             `gorm:"not null"`
 	OrganizationID     uint             `gorm:"not null"`
+	ResourceID         uint             `gorm:"not null"`
+	Resource           Resource         `gorm:"foreignKey:ResourceID"`
 	Organization       Organization     `gorm:"foreignKey:OrganizationID"`
 	OrganizationUserID uint             `gorm:"not null"`
 	OrganizationUser   OrganizationUser `gorm:"foreignKey:OrganizationUserID"`
@@ -16,6 +18,8 @@ type RestaurantBooking struct {
 	ID             uint         `gorm:"primaryKey;autoIncrement"`
 	UserID         uint         `gorm:"not null"`
 	OrganizationID uint         `gorm:"not null"`
+	ResourceID     uint         `gorm:"not null"`
+	Resource       Resource     `gorm:"foreignKey:ResourceID"`
 	Organization   Organization `gorm:"foreignKey:OrganizationID"`
 	TableNumber    int          `gorm:"not null"`
 	EventDate      string       `json:"event_date" validate:"required"`
@@ -30,6 +34,8 @@ type TrainingBooking struct {
 	Organization       Organization     `gorm:"foreignKey:OrganizationID"`
 	OrganizationUserID uint             `gorm:"not null"`
 	OrganizationUser   OrganizationUser `gorm:"foreignKey:OrganizationUserID"`
+	ResourceID         uint             `gorm:"not null"`
+	Resource           Resource         `gorm:"foreignKey:ResourceID"`
 	Duration           int              `gorm:"not null"`
 	EventDate          string           `json:"event_date"`
 	EventTime          string           `json:"event_time"`
