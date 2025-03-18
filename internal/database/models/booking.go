@@ -11,7 +11,7 @@ type HaircutBooking struct {
 	OrganizationUserID uint             `gorm:"not null"`
 	OrganizationUser   OrganizationUser `gorm:"foreignKey:OrganizationUserID"`
 	TimeSlotID         uint             `gorm:"not null"`
-	Timeslot           Timeslot         `gorm:"foreignKey:TimeslotID"`
+	Timeslot           Timeslot         `gorm:"foreignKey:TimeSlotID"`
 	Price              float64          `gorm:"not null"`
 	//PaymentID          uint             `gorm:"not null"`
 	//Payment            Payment         `gorm:"foreignKey:PaymentID"`
@@ -27,7 +27,7 @@ type RestaurantBooking struct {
 	Resource       Resource     `gorm:"foreignKey:ResourceID"`
 	TableNumber    int          `gorm:"not null"`
 	TimeSlotID     uint         `gorm:"not null"`
-	Timeslot       Timeslot     `gorm:"foreignKey:TimeslotID"`
+	Timeslot       Timeslot     `gorm:"foreignKey:TimeSlotID"`
 	Guests         int          `gorm:"not null"`
 	//PaymentID          uint             `gorm:"not null"`
 	//Payment            Payment         `gorm:"foreignKey:PaymentID"`
@@ -44,7 +44,7 @@ type TrainingBooking struct {
 	ResourceID         uint             `gorm:"not null"`
 	Resource           Resource         `gorm:"foreignKey:ResourceID"`
 	TimeSlotID         uint             `gorm:"not null"`
-	Timeslot           Timeslot         `gorm:"foreignKey:TimeslotID"`
+	Timeslot           Timeslot         `gorm:"foreignKey:TimeSlotID"`
 	Age                int              `gorm:""`
 	//PaymentID          uint             `gorm:"not null"`
 	//Payment            Payment         `gorm:"foreignKey:PaymentID"`
@@ -58,18 +58,6 @@ type EventBooking struct {
 	Event   Event `gorm:"foreignKey:EventID"`
 	//PaymentID          uint             `gorm:"not null"`
 	//Payment            Payment         `gorm:"foreignKey:PaymentID"`
-}
-
-type Event struct {
-	OrganizationID     uint             `gorm:"primaryKey;autoIncrement"`
-	Organization       Organization     `gorm:"foreignKey:OrganizationID"`
-	OrganizationUserID uint             `gorm:"not null"`
-	OrganizationUser   OrganizationUser `gorm:"foreignKey:OrganizationUserID"`
-	ResourceID         uint             `gorm:"not null"`
-	Resource           Resource         `gorm:"foreignKey:ResourceID"`
-	TimeSlotID         uint             `gorm:"not null"`
-	Timeslot           Timeslot         `gorm:"foreignKey:TimeslotID"`
-	Capacity           int              `gorm:"not null"`
 }
 
 type Payment struct {

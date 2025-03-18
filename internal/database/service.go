@@ -71,6 +71,8 @@ func InitDatabase() error {
 		&models.Resource{},
 		&models.Payment{},
 		&models.Event{},
+		&models.EventBooking{},
+		&models.Timeslot{},
 	)
 	if err != nil {
 		return fmt.Errorf("failed to migrate database: %w", err)
