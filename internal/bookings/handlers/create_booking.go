@@ -18,7 +18,7 @@ func CreateBookingHandler(c *fiber.Ctx) error {
 	bookingInput := new(models.BookingInput)
 	if err := c.BodyParser(bookingInput); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid input data",
+			"error": "Invalid request body",
 		})
 	}
 

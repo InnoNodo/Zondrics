@@ -43,11 +43,16 @@ type BookingInput struct {
 	Guests             int     `json:"guests"`
 }
 
+type ResourceStatusInput struct {
+	ResourceID uint   `json:"resource_id"`
+	Status     string `json:"status"`
+}
+
 type ResourceInput struct {
 	OrganizationID uint   `json:"organization_id"`
 	Name           string `json:"name"`
 	Type           string `json:"type"`
 	Location       string `json:"location"`
-	Capacity       int    `json:"capacity"`
+	Capacity       uint   `json:"capacity"`
 	Status         string `json:"status"`
 }
