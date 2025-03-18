@@ -2,23 +2,8 @@ package service
 
 import (
 	"errors"
-	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt/v5"
-	"strconv"
 	"time"
 )
-
-func GetUserIDFromJWT(c *fiber.Ctx) (uint, error) {
-	user := c.Locals("user").(*jwt.Token) // Получаем токен из локального контекста
-	claims := user.Claims.(jwt.MapClaims)
-
-	userID, err := strconv.ParseUint(claims["userID"].(string), 10, 32)
-	if err != nil {
-		return 0, err
-	}
-
-	return uint(userID), nil
-}
 
 func TimeFormatter(input string) (time.Time, error) {
 	layout := "2006-01-02T15:04:05"

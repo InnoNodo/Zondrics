@@ -5,6 +5,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func SetupBookingRoute(app *fiber.App) {
+func SetupBookingRoutes(app *fiber.App) {
 	app.Post("/new_booking", handlers.CreateBookingHandler)
 }

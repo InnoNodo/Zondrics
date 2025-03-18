@@ -70,6 +70,7 @@ func InitDatabase() error {
 		&models.RestaurantBooking{},
 		&models.Resource{},
 		&models.Payment{},
+		&models.Event{},
 	)
 	if err != nil {
 		return fmt.Errorf("failed to migrate database: %w", err)

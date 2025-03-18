@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type HaircutBooking struct {
 	ID                 uint             `gorm:"primaryKey;autoIncrement"`
 	UserID             uint             `gorm:"not null"`
@@ -9,8 +11,7 @@ type HaircutBooking struct {
 	Organization       Organization     `gorm:"foreignKey:OrganizationID"`
 	OrganizationUserID uint             `gorm:"not null"`
 	OrganizationUser   OrganizationUser `gorm:"foreignKey:OrganizationUserID"`
-	EventDate          string           `json:"event_date" validate:"required"`
-	EventTime          string           `json:"event_time" validate:"required"`
+	EventTime          time.Time        `json:"event_time" validate:"required"`
 	Price              float64          `gorm:"not null"`
 }
 
@@ -22,8 +23,7 @@ type RestaurantBooking struct {
 	Resource       Resource     `gorm:"foreignKey:ResourceID"`
 	Organization   Organization `gorm:"foreignKey:OrganizationID"`
 	TableNumber    int          `gorm:"not null"`
-	EventDate      string       `json:"event_date" validate:"required"`
-	EventTime      string       `json:"event_time" validate:"required"`
+	EventTime      time.Time    `json:"event_time" validate:"required"`
 	Guests         int          `gorm:"not null"`
 }
 
@@ -37,8 +37,19 @@ type TrainingBooking struct {
 	ResourceID         uint             `gorm:"not null"`
 	Resource           Resource         `gorm:"foreignKey:ResourceID"`
 	Duration           int              `gorm:"not null"`
-	EventTime          string           `json:"event_time"`
+	EventTime          time.Time        `json:"event_time"`
 	Age                int              `gorm:""`
+}
+
+type Event struct {
+	OrganizationID     uint             `gorm:"primaryKey;autoIncrement"`
+	Organization       Organization     `gorm:"foreignKey:OrganizationID"`
+	OrganizationUserID uint             `gorm:"not null"`
+	OrganizationUser   OrganizationUser `gorm:"foreignKey:OrganizationUserID"`
+	ResourceID         uint             `gorm:"not null"`
+	Resource           Resource         `gorm:"foreignKey:ResourceID"`
+	EventTime          time.Time        `gorm:"not null"`
+	Capacity           int              `gorm:"not null"`
 }
 
 type Payment struct {

@@ -48,6 +48,11 @@ type ResourceStatusInput struct {
 }
 
 type EventInput struct {
+	OrganizationID     uint   `json:"organization_id"`
+	OrganizationUserID uint   `json:"organization_user_id"`
+	ResourceID         uint   `json:"resource_id"`
+	EventTime          string `json:"event_time"`
+	Capacity           int    `json:"capacity"`
 }
 
 type ResourceInput struct {
