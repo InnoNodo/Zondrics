@@ -42,3 +42,12 @@ type BookingInput struct {
 	TableNumber        int     `json:"table_number"`
 	Guests             int     `json:"guests"`
 }
+
+type ResourceInput struct {
+	OrganizationID uint   `json:"organization_id"`
+	Name           string `json:"name"`
+	Type           string `json:"type"`
+	Location       string `json:"location"`
+	Capacity       int    `json:"capacity"`
+	Status         string `json:"status"`
+}
