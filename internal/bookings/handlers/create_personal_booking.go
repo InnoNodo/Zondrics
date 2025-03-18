@@ -8,18 +8,26 @@ import (
 )
 
 func CreatePersonalBookingHandler(c *fiber.Ctx) error {
-	UserID, err := service.GetUserIDFromJWT(c)
-	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "Unauthorized",
-		})
-	}
+	//  Get user_id form JWT-token
+
+	//UserID, err := service.GetUserIDFromJWT(c)
+	//if err != nil {
+	//	return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+	//		"error": "Unauthorized",
+	//	})
+	//}
 
 	data := new(models.BookingInput)
 
 	if err := c.BodyParser(data); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid request body",
+		})
+	}
+
+	if data.UserID == 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Field 'user_id' cannot be empty",
 		})
 	}
 
@@ -71,25 +79,24 @@ func CreatePersonalBookingHandler(c *fiber.Ctx) error {
 			})
 		}
 
-		if data.Duration <= 0 {
+		if data.OrganizationUserID == 0 {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-				"error": "Duration must be provided and greater than 0",
+				"error": "Field 'organization_user_id' cannot be empty",
 			})
 		}
 
-		var organizationUser models.Organization
-		if err := database.DB.First(&organizationUser, data.OrganizationUserID).Error; err != nil {
+		var organizationUser models.OrganizationUser
+		if err := database.DB.First(&organizationUser, "id = ?", data.OrganizationUserID).Error; err != nil {
 			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 				"error": "Trainer not found",
 			})
 		}
 
 		record := models.TrainingBooking{
-			UserID:             UserID,
+			UserID:             data.UserID,
 			OrganizationID:     data.OrganizationID,
 			OrganizationUserID: data.OrganizationUserID,
 			ResourceID:         data.ResourceID,
-			Duration:           data.Duration,
 			EventTime:          checkedTime,
 			Age:                data.Age,
 		}
@@ -117,7 +124,7 @@ func CreatePersonalBookingHandler(c *fiber.Ctx) error {
 		}
 
 		record := models.HaircutBooking{
-			UserID:             UserID,
+			UserID:             data.UserID,
 			OrganizationID:     data.OrganizationID,
 			OrganizationUserID: data.OrganizationUserID,
 			ResourceID:         data.ResourceID,
@@ -140,7 +147,7 @@ func CreatePersonalBookingHandler(c *fiber.Ctx) error {
 			})
 		}
 		record := models.RestaurantBooking{
-			UserID:         UserID,
+			UserID:         data.UserID,
 			OrganizationID: data.OrganizationID,
 			TableNumber:    data.TableNumber,
 			ResourceID:     data.ResourceID,

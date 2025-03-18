@@ -8,18 +8,26 @@ import (
 )
 
 func CreateEventBookingHandler(c *fiber.Ctx) error {
-	UserID, err := service.GetUserIDFromJWT(c)
-	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "Unauthorized",
-		})
-	}
+	//  Get user_id form JWT-token
+
+	//UserID, err := service.GetUserIDFromJWT(c)
+	//if err != nil {
+	//	return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+	//		"error": "Unauthorized",
+	//	})
+	//}
 
 	data := new(models.BookingInput)
 
 	if err := c.BodyParser(data); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid request body",
+		})
+	}
+
+	if data.UserID == 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Wrong user_id",
 		})
 	}
 
@@ -75,6 +83,12 @@ func CreateEventBookingHandler(c *fiber.Ctx) error {
 		})
 	}
 
+	if data.OrganizationUserID == 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Field 'organization_user_id' cannot be empty",
+		})
+	}
+
 	var organizationUser models.Organization
 	if err := database.DB.First(&organizationUser, data.OrganizationUserID).Error; err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
@@ -82,8 +96,8 @@ func CreateEventBookingHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	record := models.TrainingBooking{
-		UserID:             UserID,
+	record := models.EventBooking{
+		UserID:             data.UserID,
 		OrganizationID:     data.OrganizationID,
 		OrganizationUserID: data.OrganizationUserID,
 		ResourceID:         data.ResourceID,

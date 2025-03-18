@@ -9,7 +9,7 @@ import (
 )
 
 func GetUserIDFromJWT(c *fiber.Ctx) (uint, error) {
-	user := c.Locals("user").(*jwt.Token) // Получаем токен из локального контекста
+	user := c.Locals("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
 
 	userID, err := strconv.ParseUint(claims["userID"].(string), 10, 32)

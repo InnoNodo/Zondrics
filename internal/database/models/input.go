@@ -30,16 +30,17 @@ type AuthInput struct {
 }
 
 type BookingInput struct {
+	UserID             uint    `json:"user_id"`
 	OrganizationID     uint    `json:"organization_id" validate:"required"`
 	ResourceID         uint    `json:"resource_id" validate:"required"`
 	EventTime          string  `json:"event_time" validate:"required"`
-	PaymentID          uint    `json:"payment_id" validate:"required"`
 	Duration           int     `json:"duration"`
 	Age                int     `json:"age"`
 	Price              float64 `json:"price"`
-	OrganizationUserID uint    `gorm:"not null"`
+	OrganizationUserID uint    `json:"organization_user_id" validate:"required"`
 	TableNumber        int     `json:"table_number"`
 	Guests             int     `json:"guests"`
+	//PaymentID          uint    `json:"payment_id" validate:"required"`
 }
 
 type ResourceStatusInput struct {
@@ -50,6 +51,7 @@ type ResourceStatusInput struct {
 type EventInput struct {
 	OrganizationID     uint   `json:"organization_id"`
 	OrganizationUserID uint   `json:"organization_user_id"`
+	Duration           int    `json:"duration"`
 	ResourceID         uint   `json:"resource_id"`
 	EventTime          string `json:"event_time"`
 	Capacity           int    `json:"capacity"`

@@ -28,6 +28,12 @@ func CreateEventHandler(c *fiber.Ctx) error {
 		})
 	}
 
+	if data.Duration <= 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Field 'duration' cannot be less or equal than 0",
+		})
+	}
+
 	if data.ResourceID == 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Field 'resource_id' cannot be empty",
