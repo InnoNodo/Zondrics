@@ -66,4 +66,28 @@ func GetCalendarHandler(c *fiber.Ctx) error {
 		})
 	}
 
+	if formatedOpeningTime.After(formatedClosingTime) {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Field 'opening_time' cannot be after field 'closing_time'",
+		})
+	}
+
+	slots, err := service.GetAvailableSlots(
+		database.DB,
+		data.OrganizationID,
+		data.OrganizationUserID,
+		time.Hour,
+		formatedOpeningTime,
+		formatedClosingTime,
+	)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Error while getting available slots",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"slots": slots,
+	})
 }
