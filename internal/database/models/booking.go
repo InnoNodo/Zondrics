@@ -37,7 +37,6 @@ type TrainingBooking struct {
 	ResourceID         uint             `gorm:"not null"`
 	Resource           Resource         `gorm:"foreignKey:ResourceID"`
 	Duration           int              `gorm:"not null"`
-	EventDate          string           `json:"event_date"`
 	EventTime          string           `json:"event_time"`
 	Age                int              `gorm:""`
 }

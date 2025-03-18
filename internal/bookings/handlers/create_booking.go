@@ -5,6 +5,7 @@ import (
 	"Zondrics/internal/database"
 	"Zondrics/internal/database/models"
 	"github.com/gofiber/fiber/v2"
+	"time"
 )
 
 func CreateBookingHandler(c *fiber.Ctx) error {
@@ -42,19 +43,28 @@ func CreateBookingHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	//TODO:
-	//Check EventDate datetime.now()
-	//Check EventTime datetime.now()
+	// Time string example: "2025-03-20T15:04:05"
 
-	if data.EventDate == "" {
+	layout := "2006-01-02T15:04:05"
+
+	if data.EventTime == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Event Date cannot be empty",
 		})
 	}
 
-	if data.EventTime == "" {
+	parsedTime, err := time.Parse(layout, data.EventTime)
+	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Event Time cannot be empty",
+			"error": "Wrong time format",
+		})
+	}
+
+	now := time.Now()
+
+	if parsedTime.Before(now) || parsedTime.Equal(now) {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Time must be in the future",
 		})
 	}
 
@@ -69,8 +79,8 @@ func CreateBookingHandler(c *fiber.Ctx) error {
 			UserID:             UserID,
 			OrganizationID:     data.OrganizationID,
 			OrganizationUserID: data.OrganizationUserID,
+			ResourceID:         data.ResourceID,
 			Duration:           data.Duration,
-			EventDate:          data.EventDate,
 			EventTime:          data.EventTime,
 			Age:                data.Age,
 		}
@@ -93,7 +103,7 @@ func CreateBookingHandler(c *fiber.Ctx) error {
 			UserID:             UserID,
 			OrganizationID:     data.OrganizationID,
 			OrganizationUserID: data.OrganizationUserID,
-			EventDate:          data.EventDate,
+			ResourceID:         data.ResourceID,
 			EventTime:          data.EventTime,
 			Price:              data.Price,
 		}
@@ -116,7 +126,7 @@ func CreateBookingHandler(c *fiber.Ctx) error {
 			UserID:         UserID,
 			OrganizationID: data.OrganizationID,
 			TableNumber:    data.TableNumber,
-			EventDate:      data.EventDate,
+			ResourceID:     data.ResourceID,
 			EventTime:      data.EventTime,
 			Guests:         data.Guests,
 		}

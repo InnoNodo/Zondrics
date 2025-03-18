@@ -32,7 +32,6 @@ type AuthInput struct {
 type BookingInput struct {
 	OrganizationID     uint    `json:"organization_id" validate:"required"`
 	ResourceID         uint    `json:"resource_id" validate:"required"`
-	EventDate          string  `json:"event_date" validate:"required"`
 	EventTime          string  `json:"event_time" validate:"required"`
 	PaymentID          uint    `json:"payment_id" validate:"required"`
 	Duration           int     `json:"duration"`
