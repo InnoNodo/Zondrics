@@ -92,6 +92,18 @@ func CreatePersonalBookingHandler(c *fiber.Ctx) error {
 			})
 		}
 
+		if data.UserID == organizationUser.UserID {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error": "Trainer and user cannot be the same",
+			})
+		}
+
+		if data.OrganizationID == organizationUser.OrganizationID {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error": "Trainer not correlated to organization",
+			})
+		}
+
 		record := models.TrainingBooking{
 			UserID:             data.UserID,
 			OrganizationID:     data.OrganizationID,
@@ -116,10 +128,22 @@ func CreatePersonalBookingHandler(c *fiber.Ctx) error {
 			})
 		}
 
-		var organizationUser models.Organization
+		var organizationUser models.OrganizationUser
 		if err := database.DB.First(&organizationUser, data.OrganizationUserID).Error; err != nil {
 			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 				"error": "Hairdresser not found",
+			})
+		}
+
+		if data.UserID == organizationUser.UserID {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error": "Hairdresser and user cannot be the same",
+			})
+		}
+
+		if data.OrganizationID == organizationUser.OrganizationID {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error": "Hairdresser not correlated to organization",
 			})
 		}
 

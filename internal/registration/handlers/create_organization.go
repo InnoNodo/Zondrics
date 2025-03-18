@@ -3,6 +3,7 @@ package handlers
 import (
 	"Zondrics/internal/database"
 	"Zondrics/internal/database/models"
+	"Zondrics/internal/registration/service"
 	"errors"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
@@ -41,6 +42,50 @@ func CreateOrganizationHandler(c *fiber.Ctx) error {
 		})
 	}
 
+	if data.OpeningTime == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Field 'OpeningTime' cannot be empty",
+		})
+	}
+
+	if data.ClosingTime == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Field 'ClosingTime' cannot be empty",
+		})
+	}
+
+	//if data.OpeningTime == data.ClosingTime {
+	//	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	//		"error": "Field 'opening_time' cannot be equal to field 'closing_time'",
+	//	})
+	//}
+
+	formatedOpeningTime, err := service.FormatTime(data.OpeningTime)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "invalid time format for field 'opening_time', expected HH:mm",
+		})
+	}
+
+	formatedClosingTime, err := service.FormatTime(data.ClosingTime)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "invalid time format for field 'closing_time', expected HH:mm",
+		})
+	}
+
+	if formatedOpeningTime == formatedClosingTime {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Field 'opening_time' cannot be equal to field 'closing_time'",
+		})
+	}
+
+	if formatedOpeningTime.After(formatedClosingTime) {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Field 'opening_time' cannot be after field 'closing_time'",
+		})
+	}
+
 	var existingOrganization models.Organization
 	if err := database.DB.Where("Name = ?", data.Name).First(&existingOrganization).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -62,7 +107,7 @@ func CreateOrganizationHandler(c *fiber.Ctx) error {
 			"error": "Failed to create organization",
 		})
 	}
-	
+
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"message": "Organization created successfully",
 	})

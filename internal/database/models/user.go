@@ -25,8 +25,10 @@ type Admin struct {
 }
 
 type Organization struct {
-	ID       uint   `gorm:"primaryKey;autoIncrement"`
-	Name     string `gorm:"not null"`
-	City     string `gorm:"not null"`
-	Activity string `gorm:"not null"`
+	ID          uint   `gorm:"primaryKey;autoIncrement"`
+	Name        string `gorm:"not null"`
+	City        string `gorm:"not null"`
+	Activity    string `gorm:"not null"`
+	OpeningTime string `gorm:"not null"`
+	ClosingTime string `gorm:"not null"`
 }

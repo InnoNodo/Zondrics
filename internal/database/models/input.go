@@ -19,9 +19,11 @@ type OrganizationUserRegistrationInput struct {
 }
 
 type OrganizationRegistrationInput struct {
-	Name     string `json:"name"`
-	City     string `json:"city"`
-	Activity string `json:"activity"`
+	Name        string `json:"name"`
+	City        string `json:"city"`
+	Activity    string `json:"activity"`
+	OpeningTime string `json:"opening_time"`
+	ClosingTime string `json:"closing_time"`
 }
 
 type AuthInput struct {
@@ -64,4 +66,10 @@ type ResourceInput struct {
 	Location       string `json:"location"`
 	Capacity       uint   `json:"capacity"`
 	Status         string `json:"status"`
+}
+
+type CalendarInput struct {
+	OrganizationID     uint   `json:"organization_id"`
+	OrganizationUserID uint   `json:"organization_user_id"`
+	Day                string `json:"day"`
 }
