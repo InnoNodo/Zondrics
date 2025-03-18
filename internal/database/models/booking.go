@@ -2,6 +2,20 @@ package models
 
 import "time"
 
+type EventBooking struct {
+	ID                 uint             `gorm:"primaryKey;autoIncrement"`
+	UserID             uint             `gorm:"not null"`
+	OrganizationID     uint             `gorm:"not null"`
+	ResourceID         uint             `gorm:"not null"`
+	Resource           Resource         `gorm:"foreignKey:ResourceID"`
+	Organization       Organization     `gorm:"foreignKey:OrganizationID"`
+	OrganizationUserID uint             `gorm:"not null"`
+	OrganizationUser   OrganizationUser `gorm:"foreignKey:OrganizationUserID"`
+	Duration           int              `gorm:"not null"`
+	EventTime          time.Time        `json:"event_time" validate:"required"`
+	Age                int              `gorm:""`
+}
+
 type HaircutBooking struct {
 	ID                 uint             `gorm:"primaryKey;autoIncrement"`
 	UserID             uint             `gorm:"not null"`

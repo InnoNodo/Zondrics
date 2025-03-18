@@ -7,7 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func CreateBookingHandler(c *fiber.Ctx) error {
+func CreatePersonalBookingHandler(c *fiber.Ctx) error {
 	UserID, err := service.GetUserIDFromJWT(c)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
@@ -71,6 +71,12 @@ func CreateBookingHandler(c *fiber.Ctx) error {
 			})
 		}
 
+		if data.Duration <= 0 {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error": "Duration must be provided and greater than 0",
+			})
+		}
+
 		var organizationUser models.Organization
 		if err := database.DB.First(&organizationUser, data.OrganizationUserID).Error; err != nil {
 			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
@@ -93,7 +99,7 @@ func CreateBookingHandler(c *fiber.Ctx) error {
 			})
 		}
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-			"message": "Personal events record created successfully",
+			"message": "Personal training booking created successfully",
 		})
 
 	case "haircut":
@@ -124,7 +130,7 @@ func CreateBookingHandler(c *fiber.Ctx) error {
 			})
 		}
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-			"message": "Haircut record created successfully",
+			"message": "Haircut booking created successfully",
 		})
 
 	case "restaurant":
@@ -147,7 +153,7 @@ func CreateBookingHandler(c *fiber.Ctx) error {
 			})
 		}
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-			"message": "Restaurant booking record created successfully",
+			"message": "Restaurant booking created successfully",
 		})
 
 	default:

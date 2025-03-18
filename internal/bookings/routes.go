@@ -6,5 +6,7 @@ import (
 )
 
 func SetupBookingRoutes(app *fiber.App) {
-	app.Post("/new_booking", handlers.CreateBookingHandler)
+	app.Post("/create_personal_booking", handlers.CreatePersonalBookingHandler)
+	app.Post("/create_event_booking", handlers.CreateEventBookingHandler)
+
 }
