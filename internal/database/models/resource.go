@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type Resource struct {
 	ID             uint         `gorm:"primaryKey;autoIncrement"`
 	OrganizationID uint         `gorm:"not null"`
@@ -9,6 +11,6 @@ type Resource struct {
 	Location       string       `gorm:"not null"`
 	Capacity       uint         `gorm:"not null"`
 	Status         string       `gorm:"type:varchar(20);default:'available'"`
-	CreatedAt      string       `gorm:"autoCreateTime"`
-	UpdatedAt      string       `gorm:"autoUpdateTime"`
+	CreatedAt      time.Time    `gorm:"autoCreateTime"`
+	UpdatedAt      time.Time    `gorm:"autoUpdateTime"`
 }

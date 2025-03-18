@@ -71,9 +71,13 @@ func CreateResource(c *fiber.Ctx) error {
 	}
 
 	var resource models.Resource
-	if err := database.DB.First(&resource, data.Name).Error; err != nil {
+	if err := database.DB.First(&resource, "name = ?", data.Name).Error; err == nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Resource already exist",
+			"error": "Resource already exists",
+		})
+	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to query database",
 		})
 	}
 

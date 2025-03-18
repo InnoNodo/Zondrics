@@ -40,7 +40,18 @@ func ChangeResourceStatus(c *fiber.Ctx) error {
 		})
 	}
 
+	if resource.Status == data.Status {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Resource status '" + data.Status + "' is already '" + data.Status + "'",
+		})
+	}
+
 	resource.Status = data.Status
+	if err := database.DB.Save(&resource).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to update resource status",
+		})
+	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": "Status was changed successfully",

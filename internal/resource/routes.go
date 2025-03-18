@@ -6,7 +6,7 @@ import (
 )
 
 func SetupResourceRoutes(app *fiber.App) {
-	app.Get("/create_resource", handlers.CreateResource)
+	app.Post("/create_resource", handlers.CreateResource)
 
 	app.Post("/change_resource_status", handlers.ChangeResourceStatus)
 }
